@@ -396,8 +396,8 @@
     #para-quem .section-title .bold { font-weight: 700; }
     .paraquem-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 28px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
       margin-bottom: 48px;
     }
     .paraquem-card {
@@ -934,7 +934,11 @@
       .container { padding: 0 24px; }
       .section { padding: 72px 0; }
       nav { display: none; }
-      .hero-title { font-size: 32px; }
+      .hero-title {
+        font-size: 26px;
+        line-height: 1.3;
+      }
+      .hero-title .hero-br { display: none; }
       .hero-ctas { flex-direction: column; }
       .hero-ctas .btn { justify-content: center; }
       #apresentacao .section-title,
@@ -1002,9 +1006,9 @@
   <div class="hero-content">
     <div class="eyebrow hero-eyebrow">Navegar é mais que chegar</div>
     <h1 class="hero-title">
-      Aluguel de embarcação em<br>
-      Manaus para quem busca<br>
-      <span class="accent">estrutura, autonomia e<br>
+      Aluguel de embarcação em<br class="hero-br">
+      Manaus para quem busca<br class="hero-br">
+      <span class="accent">estrutura, autonomia e<br class="hero-br">
       experiência</span> de verdade no rio.
     </h1>
     <p class="hero-para">
@@ -1105,6 +1109,25 @@
             <li>Sala de estar com TV e home theater</li>
             <li>Churrasqueira, caixa de som e área externa aberta</li>
             <li>Cozinha completa para sua equipe ou cozinheira contratada</li>
+          </ul>
+        </div>
+      </div>
+      <!-- Card Acomodações -->
+      <div class="paraquem-card">
+        <div class="card-image">
+          <img src="images/acomodacao.webp" alt="Acomodações da Comandante Tibinho">
+          <div class="card-image-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M22 4v16"/><path d="M2 8h20"/><rect x="6" y="12" width="4" height="4" rx="1"/><rect x="14" y="12" width="4" height="4" rx="1"/></svg>
+            Acomodações a bordo
+          </div>
+        </div>
+        <div class="card-body">
+          <p>Suítes climatizadas, camarotes e áreas comuns pensados para receber bem em viagens longas. Conforto para descansar depois de um dia no rio, com privacidade para famílias, casais e equipes.</p>
+          <ul class="check-list">
+            <li>01 suíte master + 08 suítes climatizadas</li>
+            <li>02 camarotes para 22 pessoas acomodadas</li>
+            <li>02 banheiros sociais e roupa de cama inclusa</li>
+            <li>Áreas internas com ar-condicionado em todas as cabines</li>
           </ul>
         </div>
       </div>

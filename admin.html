@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel de Tags — Comandante Tibinho</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --marinho: #0D1B2A;
+      --marinho-fundo: #0A1628;
+      --azul-claro: #a8c8e8;
+      --azul-medio: #7BA7C7;
+      --azul-escuro: #1B3A6B;
+      --claro: #F7FAFC;
+      --borda: rgba(168,200,232,0.22);
+      --erro: #E2707A;
+      --sucesso: #7FC8A9;
+      --aviso: #E8C07D;
+    }
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: var(--marinho-fundo);
+      color: var(--claro);
+      min-height: 100vh;
+      line-height: 1.6;
+      padding: 32px 20px 64px;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; }
+
+    header.topo { text-align: center; margin-bottom: 36px; }
+    header.topo h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(26px, 5vw, 36px);
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    header.topo h1 .accent { color: var(--azul-claro); }
+    header.topo p { color: var(--azul-medio); font-size: 14px; margin-top: 8px; }
+
+    .cartao {
+      background: linear-gradient(160deg, rgba(27,58,107,0.42), rgba(13,27,42,0.9));
+      border: 1px solid var(--borda);
+      border-radius: 16px;
+      padding: 28px;
+      margin-bottom: 22px;
+    }
+    .cartao h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 21px;
+      margin-bottom: 6px;
+    }
+    .cartao > p.sub { color: var(--azul-medio); font-size: 13.5px; margin-bottom: 22px; }
+
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+    .dica { display: block; font-weight: 400; color: var(--azul-medio); font-size: 12px; margin-top: 4px; }
+    input, textarea {
+      width: 100%;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      color: var(--claro);
+      background: rgba(10,22,40,0.72);
+      border: 1px solid var(--borda);
+      border-radius: 10px;
+      padding: 12px 14px;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--azul-medio);
+      box-shadow: 0 0 0 3px rgba(123,167,199,0.18);
+    }
+    input::placeholder, textarea::placeholder { color: rgba(168,200,232,0.45); }
+    textarea { min-height: 150px; resize: vertical; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 13px; line-height: 1.5; }
+    .campo { margin-bottom: 20px; }
+    .campo.erro input { border-color: var(--erro); }
+    .campo .msg-erro { color: var(--erro); font-size: 12.5px; margin-top: 5px; display: none; }
+    .campo.erro .msg-erro { display: block; }
+
+    .grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 0 20px; }
+
+    button {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 30px;
+      cursor: pointer;
+      transition: transform .15s, opacity .15s;
+    }
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:disabled { opacity: .55; cursor: progress; }
+    .btn-primario { background: var(--azul-claro); color: var(--marinho); }
+    .btn-secundario { background: transparent; color: var(--azul-claro); border: 1px solid var(--borda); }
+
+    .recado { border-radius: 10px; padding: 13px 16px; font-size: 13.5px; margin-bottom: 18px; display: none; }
+    .recado.visivel { display: block; }
+    .recado.falhou { background: rgba(226,112,122,0.14); border: 1px solid rgba(226,112,122,0.45); }
+    .recado.deu-certo { background: rgba(127,200,169,0.13); border: 1px solid rgba(127,200,169,0.42); }
+    .recado.atencao { background: rgba(232,192,125,0.13); border: 1px solid rgba(232,192,125,0.42); }
+    .recado a { color: var(--azul-claro); }
+
+    ul.status { list-style: none; font-size: 14px; }
+    ul.status li { padding: 9px 0; border-bottom: 1px solid rgba(168,200,232,0.1); display: flex; justify-content: space-between; gap: 14px; }
+    ul.status li:last-child { border-bottom: none; }
+    ul.status .nome { color: var(--azul-claro); }
+    ul.status .valor { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; text-align: right; word-break: break-all; }
+    ul.status .fixa { color: var(--azul-medio); font-size: 11.5px; }
+
+    .nota {
+      font-size: 12.5px;
+      color: var(--azul-medio);
+      background: rgba(10,22,40,0.5);
+      border-left: 2px solid var(--azul-medio);
+      padding: 11px 14px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+    }
+    .acoes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 8px; }
+    .rodape { text-align: center; color: rgba(168,200,232,0.5); font-size: 12px; margin-top: 30px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topo">
+    <h1>Comandante <span class="accent">Tibinho</span></h1>
+    <p>Painel de tags e pixels</p>
+  </header>
+
+  <!-- ===== TELA DE SENHA ===== -->
+  <section id="tela-senha" class="cartao">
+    <h2>Acesso restrito</h2>
+    <p class="sub">Informe a senha do painel para continuar.</p>
+    <div id="recado-login" class="recado falhou"></div>
+    <form id="form-login">
+      <div class="campo">
+        <label for="senha">Senha</label>
+        <input id="senha" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn-primario" type="submit">Entrar</button>
+    </form>
+  </section>
+
+  <!-- ===== PAINEL ===== -->
+  <div id="painel" hidden>
+
+    <section class="cartao">
+      <h2>Tags ativas no site</h2>
+      <p class="sub" id="texto-atualizacao"></p>
+      <ul class="status" id="lista-status"></ul>
+    </section>
+
+    <form id="form-tags">
+      <div id="recado-salvar" class="recado"></div>
+
+      <section class="cartao">
+        <h2>Redes e ferramentas</h2>
+        <p class="sub">Cole apenas o ID de cada ferramenta. Eu monto o código certo no site.</p>
+        <div class="grade" id="grade-campos"></div>
+      </section>
+
+      <section class="cartao">
+        <h2>Código personalizado</h2>
+        <p class="sub">Para ferramentas que não estão na lista acima.</p>
+        <div class="nota">
+          Aqui vale exatamente o que você colar, inclusive erro de digitação. Cole
+          só código que a própria ferramenta forneceu. Se o site apresentar algum
+          problema depois de salvar, limpe este campo e salve de novo.
+        </div>
+        <div class="campo">
+          <label for="codigo_livre">Cole o código completo, com as tags de script</label>
+          <textarea id="codigo_livre" name="codigo_livre" spellcheck="false" placeholder="&lt;script&gt;&#10;  // o código que a ferramenta forneceu&#10;&lt;/script&gt;"></textarea>
+        </div>
+      </section>
+
+      <div class="acoes">
+        <button class="btn-primario" type="submit" id="btn-salvar">Salvar e publicar</button>
+        <button class="btn-secundario" type="button" id="btn-recarregar">Conferir o que está no ar</button>
+      </div>
+    </form>
+
+    <p class="rodape">
+      Depois de salvar, o site leva cerca de 40 segundos para publicar a mudança.
+    </p>
+  </div>
+
+</div>
+
+<script>
+  // Impede o tags.js de disparar os pixels aqui dentro do painel: nesta página
+  // ele serve apenas para preencher o formulário.
+  window.TIBINHO_TAGS_NO_INJECT = true;
+
+  // Mesma lista do servidor, em api/_lib.js.
+  const CAMPOS = [
+    { id: 'ga4',         rotulo: 'Google Analytics 4',   exemplo: 'G-ABC1234XYZ',    dica: 'Começa com G-' },
+    { id: 'google_ads',  rotulo: 'Google Ads',           exemplo: 'AW-123456789',    dica: 'Começa com AW-' },
+    { id: 'gtm',         rotulo: 'Google Tag Manager',   exemplo: 'GTM-ABC1234',     dica: 'Começa com GTM-' },
+    { id: 'meta_pixel',  rotulo: 'Pixel do Meta',        exemplo: '1234567890123',   dica: 'Facebook e Instagram. Só números' },
+    { id: 'tiktok',      rotulo: 'TikTok',               exemplo: 'CABCDE12345FGHIJ', dica: 'O Pixel ID do TikTok Ads' },
+    { id: 'linkedin',    rotulo: 'LinkedIn',             exemplo: '1234567',         dica: 'O Partner ID. Só números' },
+    { id: 'pinterest',   rotulo: 'Pinterest',            exemplo: '2612345678901',   dica: 'O Tag ID. Só números' },
+    { id: 'kwai',        rotulo: 'Kwai',                 exemplo: 'abc123',          dica: 'O Pixel ID do Kwai for Business' }
+  ];
+
+  // Já estão fixas no index.html e não passam por este painel.
+  const FIXAS = [
+    { nome: 'Google Analytics 4', valor: 'G-731D1FZLCT' },
+    { nome: 'Google Ads', valor: 'AW-18369974279' },
+    { nome: 'Evento de clique no WhatsApp', valor: 'whatsapp_click' }
+  ];
+
+  const el = id => document.getElementById(id);
+
+  function recado(alvo, texto, tipo) {
+    const caixa = el(alvo);
+    caixa.className = 'recado ' + tipo + (texto ? ' visivel' : '');
+    caixa.innerHTML = texto || '';
+  }
+
+  function montarCampos() {
+    el('grade-campos').innerHTML = CAMPOS.map(c => `
+      <div class="campo" id="campo-${c.id}">
+        <label for="${c.id}">${c.rotulo}
+          <span class="dica">${c.dica}</span>
+        </label>
+        <input id="${c.id}" name="${c.id}" type="text" spellcheck="false" placeholder="${c.exemplo}">
+        <span class="msg-erro"></span>
+      </div>`).join('');
+  }
+
+  // Carrega o tags.js que está publicado, driblando o cache do navegador.
+  function carregarEstado() {
+    return new Promise(resolve => {
+      const s = document.createElement('script');
+      s.src = '/tags.js?v=' + Date.now();
+      s.onload = s.onerror = () => { s.remove(); resolve(window.TIBINHO_TAGS || {}); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function preencher(config) {
+    CAMPOS.forEach(c => { el(c.id).value = config[c.id] || ''; });
+    el('codigo_livre').value = config.codigo_livre || '';
+
+    const ativas = CAMPOS.filter(c => config[c.id]).map(c =>
+      `<li><span class="nome">${c.rotulo}</span><span class="valor">${config[c.id]}</span></li>`);
+    if (config.codigo_livre) {
+      ativas.push('<li><span class="nome">Código personalizado</span><span class="valor">presente</span></li>');
+    }
+    const fixas = FIXAS.map(f =>
+      `<li><span class="nome">${f.nome} <span class="fixa">fixa no site</span></span><span class="valor">${f.valor}</span></li>`);
+
+    el('lista-status').innerHTML = fixas.join('') +
+      (ativas.length ? ativas.join('') : '<li><span class="nome">Nenhuma tag cadastrada pelo painel ainda</span></li>');
+
+    const quando = window.TIBINHO_TAGS_ATUALIZADO_EM;
+    el('texto-atualizacao').textContent = quando
+      ? 'Última alteração pelo painel: ' + new Date(quando).toLocaleString('pt-BR')
+      : 'O painel ainda não publicou nenhuma alteração.';
+  }
+
+  function limparErros() {
+    document.querySelectorAll('.campo.erro').forEach(c => c.classList.remove('erro'));
+  }
+
+  async function envia(url, dados) {
+    const r = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    });
+    return { status: r.status, corpo: await r.json().catch(() => ({})) };
+  }
+
+  el('form-login').addEventListener('submit', async e => {
+    e.preventDefault();
+    const botao = e.target.querySelector('button');
+    botao.disabled = true;
+    recado('recado-login', '', 'falhou');
+    try {
+      const { status, corpo } = await envia('/api/login', { senha: el('senha').value });
+      if (status !== 200) {
+        recado('recado-login', corpo.erro || 'Não consegui entrar.', 'falhou');
+        return;
+      }
+      el('senha').value = '';
+      el('tela-senha').hidden = true;
+      el('painel').hidden = false;
+      preencher(await carregarEstado());
+    } catch {
+      recado('recado-login', 'Falha de conexão. Tente de novo.', 'falhou');
+    } finally {
+      botao.disabled = false;
+    }
+  });
+
+  el('form-tags').addEventListener('submit', async e => {
+    e.preventDefault();
+    limparErros();
+    recado('recado-salvar', '', '');
+    const botao = el('btn-salvar');
+    botao.disabled = true;
+
+    const dados = { codigo_livre: el('codigo_livre').value };
+    CAMPOS.forEach(c => { dados[c.id] = el(c.id).value; });
+
+    try {
+      const { status, corpo } = await envia('/api/salvar', dados);
+
+      if (status === 400 && Array.isArray(corpo.erros)) {
+        corpo.erros.forEach(erro => {
+          const campo = el('campo-' + erro.campo);
+          if (campo) {
+            campo.classList.add('erro');
+            campo.querySelector('.msg-erro').textContent = erro.mensagem;
+          }
+        });
+        recado('recado-salvar', 'Não salvei: confira os campos marcados em vermelho.', 'falhou');
+        return;
+      }
+
+      if (status !== 200) {
+        recado('recado-salvar', corpo.erro || 'Não consegui salvar.', 'falhou');
+        return;
+      }
+
+      const avisos = (corpo.avisos || []).map(a => '<br>• ' + a.mensagem).join('');
+      recado('recado-salvar',
+        'Salvo. O site publica a mudança em cerca de 40 segundos — depois disso, clique em ' +
+        '"Conferir o que está no ar".' + avisos,
+        avisos ? 'atencao' : 'deu-certo');
+    } catch {
+      recado('recado-salvar', 'Falha de conexão. Tente de novo.', 'falhou');
+    } finally {
+      botao.disabled = false;
+    }
+  });
+
+  el('btn-recarregar').addEventListener('click', async () => {
+    const botao = el('btn-recarregar');
+    botao.disabled = true;
+    preencher(await carregarEstado());
+    recado('recado-salvar', 'Lista atualizada com o que está publicado agora.', 'deu-certo');
+    botao.disabled = false;
+  });
+
+  montarCampos();
+</script>
+</body>
+</html>

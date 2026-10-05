@@ -9,6 +9,7 @@
     gtag('js', new Date());
 
     gtag('config', 'G-731D1FZLCT');
+    gtag('config', 'AW-18369974279');
   </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1529,6 +1530,23 @@
       header.style.background = 'rgba(13,27,42,0.97)';
     } else {
       header.style.background = 'rgba(13,27,42,0.92)';
+    }
+  });
+
+  // Conversão: clique nos botões de WhatsApp
+  // Para enviar direto ao Google Ads, preencha com 'AW-XXXXXXXXX/rótulo' da ação de conversão
+  const ADS_WHATSAPP_CONVERSION = '';
+  if (ADS_WHATSAPP_CONVERSION) gtag('config', ADS_WHATSAPP_CONVERSION.split('/')[0]);
+  document.addEventListener('click', e => {
+    const link = e.target.closest('a[href*="wa.me"]');
+    if (!link || typeof gtag !== 'function') return;
+    const section = link.closest('section, header, footer');
+    gtag('event', 'whatsapp_click', {
+      button_location: section ? (section.id || section.tagName.toLowerCase()) : 'desconhecido',
+      button_text: link.textContent.trim()
+    });
+    if (ADS_WHATSAPP_CONVERSION) {
+      gtag('event', 'conversion', { send_to: ADS_WHATSAPP_CONVERSION });
     }
   });
 

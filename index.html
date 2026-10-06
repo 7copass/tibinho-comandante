@@ -1536,9 +1536,11 @@
   });
 
   // Conversão: clique nos botões de WhatsApp
-  // Para enviar direto ao Google Ads, preencha com 'AW-XXXXXXXXX/rótulo' da ação de conversão
-  const ADS_WHATSAPP_CONVERSION = '';
-  if (ADS_WHATSAPP_CONVERSION) gtag('config', ADS_WHATSAPP_CONVERSION.split('/')[0]);
+  // Ação de conversão "Clique WhatsApp _ Site" do Google Ads. A tag AW já é
+  // carregada no <head>, então aqui só o evento da conversão é enviado.
+  const ADS_WHATSAPP_CONVERSION = 'AW-18369974279/gWOYCOf_2Y8dEIegvrdE';
+  const ADS_WHATSAPP_VALOR = 1.0;
+  const ADS_WHATSAPP_MOEDA = 'BRL';
   document.addEventListener('click', e => {
     const link = e.target.closest('a[href*="wa.me"]');
     if (!link || typeof gtag !== 'function') return;
@@ -1548,7 +1550,11 @@
       button_text: link.textContent.trim()
     });
     if (ADS_WHATSAPP_CONVERSION) {
-      gtag('event', 'conversion', { send_to: ADS_WHATSAPP_CONVERSION });
+      gtag('event', 'conversion', {
+        send_to: ADS_WHATSAPP_CONVERSION,
+        value: ADS_WHATSAPP_VALOR,
+        currency: ADS_WHATSAPP_MOEDA
+      });
     }
   });
 
